@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -38,12 +39,15 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
 
     public class MenuImpl {
 
+        private final ItemStack FILLER_MATERIAL = new ItemBuilder(Material.STAINED_GLASS_PANE).setDurability((short) 5).toItemStack();
+
         public void doSomething(Player player) {
             Menu menu = new Menu("Example Menu", 4);
             menu.setItem(0, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick").toItemStack(), event -> {
                 Player player1 = (Player) event.getWhoClicked();
                 player1.sendMessage("Hey you clicked this stick!");
             }));
+            menu.fill(new Button(false, FILLER_MATERIAL)); // Fills the rest of the menu w/ the FILLER_MATERIAL, important that this gets called after population.
             menu.setStatic(true); // Make this menu never unregister, allows for re-use. default is false
             menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory named " + menu1.getTitle() + " w/ a size of " + menu1.getSize()));
             menu.show(player);
