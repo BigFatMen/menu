@@ -44,7 +44,7 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
                 Player player1 = (Player) event.getWhoClicked();
                 player1.sendMessage("Hey you clicked this stick!");
             }));
-            menu.setStatic(true); // Make this menu never unregister, allows for re-use.
+            menu.setStatic(true); // Make this menu never unregister, allows for re-use. default is false
             menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory named " + menu1.getTitle() + " w/ a size of " + menu1.getSize()));
             menu.show(player);
         }

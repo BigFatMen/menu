@@ -72,9 +72,15 @@ public class Menu {
                 return i;
             }
         }
-        return -1;
+        return -1; // Will throw when #checkBounds is called.
     }
 
+    /**
+     * Helper method to see if the index is valid.
+     *
+     * @param slot             the index to check
+     * @param exceptionMessage What to say if the index check fails
+     */
     private void checkBounds(int slot, String exceptionMessage) {
         if (slot < 0 || slot > (size * 9)) {
             throw new IndexOutOfBoundsException(exceptionMessage);
