@@ -43,9 +43,8 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
 
         public void doSomething(Player player) {
             Menu menu = new Menu("Example Menu", 4);
-            menu.setItem(0, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick").toItemStack(), event -> {
-                Player player1 = (Player) event.getWhoClicked();
-                player1.sendMessage("Hey you clicked this stick!");
+            menu.setItem(0, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick").toItemStack(), (player1, menu1) -> {
+               player1.sendMessage("Hey! You clicked the stick.");
             }));
             menu.fill(new Button(false, FILLER_MATERIAL)); // Fills the rest of the menu w/ the FILLER_MATERIAL, important that this gets called after population.
             menu.setStatic(true); // Make this menu never unregister, allows for re-use. default is false

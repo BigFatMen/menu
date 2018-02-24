@@ -2,9 +2,12 @@ package me.missionary.menu.button;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.missionary.menu.Menu;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -16,13 +19,14 @@ public class Button {
 
     private boolean moveable;
     private ItemStack stack;
-    private Consumer<InventoryClickEvent> consumer;
+    private BiConsumer<Player, Menu> consumer;
 
-    public Button(boolean moveable, @NonNull ItemStack stack, Consumer<InventoryClickEvent> consumer) {
+    public Button(boolean moveable, @NonNull ItemStack stack, BiConsumer<Player, Menu> consumer) {
         this.moveable = moveable;
         this.stack = stack;
         this.consumer = consumer;
     }
+
 
     public Button(boolean moveable, ItemStack stack) {
         this(moveable, stack, null);
