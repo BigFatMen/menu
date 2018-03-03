@@ -40,9 +40,11 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
 
         public void doSomething(Player player) {
             Menu menu = new Menu("Example Menu", 4);
-            menu.setItem(0, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick").toItemStack(), event -> {
-                Player player1 = (Player) event.getWhoClicked();
-                player1.sendMessage("Hey you clicked this stick!");
+            menu.setItem(0, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick").toItemStack(), (player1, button) -> {
+                player1.sendMessage("You have clicked the Stick."); // Java 8 Functional Style
+            }));
+            menu.setItem(1, new Button(true, new ItemBuilder(Material.EMERALD).setName(ChatColor.GREEN + "Emerald").toItemStack(), (player1, button) -> {
+                player1.sendMessage("Wow! You have clicked the Emerald.");
             }));
             menu.setStatic(true); // Make this menu never unregister, allows for re-use. default is false
             menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory named " + menu1.getTitle() + " w/ a size of " + menu1.getSize()));
