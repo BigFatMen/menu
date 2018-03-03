@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 
 /**
  * @author Missionary (missionarymc@gmail.com)
@@ -47,13 +48,21 @@ public class Menu {
         MenuListener.getInstance().registerMenuListener(this);
     }
 
-    public void addItem(Button button) {
+    public void addItem(Button button) { // #setItem will enforce the non null policy.
         setItem(getFirstEmptySlot(), button);
     }
 
-    public void setItem(int index, Button button) {
+    public void setItem(int index, @NonNull Button button) {
         checkBounds(index, "setItem(); Index is out of range!");
         contents.add(index, button);
+    }
+
+    public void fill(Button button){
+        IntStream.range(0, size * 9).filter(value -> contents.get(value) == null).forEach(value -> setItem(value, button));
+    }
+
+    public void fillRange(int startingIndex, int endIndex, @NonNull Button button) {
+        IntStream.range(startingIndex, endIndex).forEach(i -> setItem(i, button));
     }
 
     public void setCloseHandler(BiConsumer<Player, Menu> closeHandler) {
