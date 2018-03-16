@@ -1,5 +1,6 @@
 package me.missionary.menu.util;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemBuilder {
+
+    private static final ImmutableList<Material> LEATHER_ARMOR_PIECES = ImmutableList.of(Material.LEATHER_BOOTS, Material.LEATHER_LEGGINGS, Material.LEATHER_CHESTPLATE, Material.LEATHER_HELMET);
 
     private ItemStack is;
 
@@ -268,6 +271,9 @@ public class ItemBuilder {
      * @param color The color to set it to.
      */
     public ItemBuilder setLeatherArmorColor(Color color) {
+        if (!LEATHER_ARMOR_PIECES.contains(is.getType())) {
+            return this;
+        }
         LeatherArmorMeta im = (LeatherArmorMeta) is.getItemMeta();
         im.setColor(color);
         is.setItemMeta(im);

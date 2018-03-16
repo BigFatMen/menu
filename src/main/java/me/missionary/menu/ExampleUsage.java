@@ -18,7 +18,7 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
 
     @Override
     public void onEnable() {
-        getServer().getPluginManager().registerEvents(new MenuListener(), this);
+        getServer().getPluginManager().registerEvents(MenuListener.getInstance(), this); // No need for 'new' keyword because MenuListener follows Singleton
         getServer().getPluginCommand("test").setExecutor(this);
     }
 
