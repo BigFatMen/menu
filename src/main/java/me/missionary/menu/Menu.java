@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -35,7 +36,7 @@ public class Menu {
     private Inventory craftBukkitInventory;
 
     public Menu(String title, int size) { // No need for @NonNull as the other constructor will handle it.
-        this(title, size, null);
+        this(title, size, new ArrayList<>());
     }
 
     public Menu(@NonNull String title, int size, List<Button> contents) {
