@@ -26,7 +26,7 @@ public class Menu {
     private final String title;
     @Getter
     private final int size;
-    private List<Button> contents;
+    private Button[] contents;
     @Getter
     private BiConsumer<Player, Menu> closeHandler;
     @Getter
@@ -36,16 +36,16 @@ public class Menu {
     private Inventory craftBukkitInventory;
 
     public Menu(String title, int size) { // No need for @NonNull as the other constructor will handle it.
-        this(title, size, new ArrayList<>());
+        this(title, size, null);
     }
 
-    public Menu(@NonNull String title, int size, List<Button> contents) {
+    public Menu(@NonNull String title, int size, Button[] contents) {
         this.title = title;
         if (size <= 0 || size > 6) {
             throw new IndexOutOfBoundsException("A menu can only have between 1 & 6 for a size");
         }
         this.size = size;
-        this.contents = contents;
+        this.contents = contents == null ? new Button[size * 9] : contents;
         MenuListener.getInstance().registerMenuListener(this);
     }
 
@@ -55,11 +55,11 @@ public class Menu {
 
     public void setItem(int index, @NonNull Button button) {
         checkBounds(index, "setItem(); Index is out of range!");
-        contents.add(index, button);
+        contents[index] = button;
     }
 
     public void fill(Button button){
-        IntStream.range(0, size * 9).filter(value -> contents.get(value) == null).forEach(value -> setItem(value, button));
+        IntStream.range(0, size * 9).filter(value -> contents[value] == null).forEach(value -> setItem(value, button));
     }
 
     public void fillRange(int startingIndex, int endIndex, @NonNull Button button) {
@@ -76,8 +76,8 @@ public class Menu {
      * @return an applicable slot or -1 if no slot can be found
      */
     private int getFirstEmptySlot() {
-        for (int i = 0; i < contents.size(); i++) {
-            Button is = contents.get(i);
+        for (int i = 0; i < contents.length; i++) {
+            Button is = contents[i];
             if (is == null || is.getStack().getType() == Material.AIR) {
                 return i;
             }
@@ -104,17 +104,20 @@ public class Menu {
     private void buildCBInventory() {
         this.craftBukkitInventory = Bukkit.createInventory(null, size * 9, title);
 
-        for (int i = 0; i < contents.size(); i++) {
-            ItemStack cbIs = contents.get(i).getStack();
+        for (int i = 0; i < contents.length; i++) {
+            Button cbIs = contents[i];
+            ItemStack stack;
             if (cbIs == null) {
-                cbIs = new ItemStack(Material.AIR);
+                stack = new ItemStack(Material.AIR);
+            } else {
+                stack = cbIs.getStack();
             }
-            craftBukkitInventory.setItem(i, cbIs);
+            craftBukkitInventory.setItem(i, stack);
         }
     }
 
     public Button getButtonByIndex(int index) {
-        return contents.get(index);
+        return contents[index];
     }
 
     public void show(Player player) {
@@ -125,7 +128,7 @@ public class Menu {
         player.openInventory(craftBukkitInventory);
     }
 
-    public List<Button> getContents() {
-        return Collections.unmodifiableList(contents); // The contents should'nt be mutated out of this class.
+    public void close(Player player){
+        player.closeInventory();
     }
 }
