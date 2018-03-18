@@ -2,7 +2,7 @@ package me.missionary.menu.button;
 
 import lombok.Getter;
 import lombok.NonNull;
-import org.bukkit.inventory.ItemStack;
+import me.missionary.menu.util.ItemBuilder;
 
 /**
  * @author Missionary (missionarymc@gmail.com)
@@ -12,16 +12,16 @@ import org.bukkit.inventory.ItemStack;
 public class Button {
 
     private boolean moveable;
-    private ItemStack stack;
+    private ItemBuilder stack;
     private ClickAction consumer;
 
-    public Button(boolean moveable, @NonNull ItemStack stack, ClickAction consumer) {
+    public Button(boolean moveable, @NonNull ItemBuilder stack, ClickAction consumer) {
         this.moveable = moveable;
         this.stack = stack;
         this.consumer = consumer;
     }
 
-    public Button(boolean moveable, ItemStack stack) {
+    public Button(boolean moveable, ItemBuilder stack) {
         this(moveable, stack, null);
     }
 }

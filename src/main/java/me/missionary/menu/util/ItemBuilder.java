@@ -1,6 +1,7 @@
 package me.missionary.menu.util;
 
 import com.google.common.collect.ImmutableList;
+import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -19,6 +20,7 @@ public class ItemBuilder {
 
     private static final ImmutableList<Material> LEATHER_ARMOR_PIECES = ImmutableList.of(Material.LEATHER_BOOTS, Material.LEATHER_LEGGINGS, Material.LEATHER_CHESTPLATE, Material.LEATHER_HELMET);
 
+    @Getter
     private ItemStack is;
 
     /**

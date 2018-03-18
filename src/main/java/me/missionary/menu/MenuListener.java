@@ -1,5 +1,6 @@
 package me.missionary.menu;
 
+import lombok.NonNull;
 import me.missionary.menu.button.Button;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -34,7 +35,11 @@ public class MenuListener implements Listener {
         return MENU_LISTENER;
     }
 
-    void registerMenuListener(Menu menu) {
+    void removeMenuListener(@NonNull Menu menu) {
+        menuListeners.remove(menu);
+    }
+
+    void registerMenuListener(@NonNull Menu menu) {
         menuListeners.add(menu);
     }
 
@@ -97,13 +102,7 @@ public class MenuListener implements Listener {
         }
 
         if (menu != null) {
-            if (menu.getCloseHandler() != null) {
-                menu.getCloseHandler().accept((Player) event.getPlayer(), menu);
-            }
-
-            if (!menu.isStatic()) {
-                menuListeners.remove(menu);
-            }
+            menu.handleClose((Player) event.getPlayer());
         }
     }
 }

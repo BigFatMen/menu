@@ -10,9 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
@@ -58,7 +55,7 @@ public class Menu {
         contents[index] = button;
     }
 
-    public void fill(Button button){
+    public void fill(Button button) {
         IntStream.range(0, size * 9).filter(value -> contents[value] == null).forEach(value -> setItem(value, button));
     }
 
@@ -78,7 +75,7 @@ public class Menu {
     private int getFirstEmptySlot() {
         for (int i = 0; i < contents.length; i++) {
             Button is = contents[i];
-            if (is == null || is.getStack().getType() == Material.AIR) {
+            if (is == null || is.getStack().getIs().getType() == Material.AIR) {
                 return i;
             }
         }
@@ -101,8 +98,10 @@ public class Menu {
         return craftBukkitInventory != null;
     }
 
-    private void buildCBInventory() {
-        this.craftBukkitInventory = Bukkit.createInventory(null, size * 9, title);
+    private void buildCBInventory(boolean initBuild) {
+        if (initBuild) {
+            this.craftBukkitInventory = Bukkit.createInventory(null, size * 9, title);
+        }
 
         for (int i = 0; i < contents.length; i++) {
             Button cbIs = contents[i];
@@ -110,7 +109,7 @@ public class Menu {
             if (cbIs == null) {
                 stack = new ItemStack(Material.AIR);
             } else {
-                stack = cbIs.getStack();
+                stack = cbIs.getStack().toItemStack();
             }
             craftBukkitInventory.setItem(i, stack);
         }
@@ -120,15 +119,30 @@ public class Menu {
         return contents[index];
     }
 
+    public void refresh(Player player) {
+        buildCBInventory(hasBeenBuilt());
+        player.updateInventory();
+    }
+
     public void show(Player player) {
         if (!hasBeenBuilt()) {
-            buildCBInventory();
+            buildCBInventory(true);
         }
 
         player.openInventory(craftBukkitInventory);
     }
 
-    public void close(Player player){
+    protected void handleClose(Player player) {
+        if (closeHandler != null) {
+            closeHandler.accept(player, this);
+        }
+        if (!isStatic) {
+            MenuListener.getInstance().removeMenuListener(this);
+        }
+    }
+
+    public void close(Player player) {
         player.closeInventory();
+        handleClose(player);
     }
 }
