@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Missionary (missionarymc@gmail.com)
@@ -67,22 +68,21 @@ public class MenuListener implements Listener {
             int slot = event.getSlot();
             if (slot >= 0 && slot <= (menu.getSize() * 9)) {
 
-                Button button = menu.getButtonByIndex(slot);
+                Optional<Button> buttonOptional = menu.getButtonByIndex(slot);
 
-                if (button == null) {
-                    return;
-                }
+                buttonOptional.ifPresent(button -> {
 
-                if (button.getConsumer() == null) { // Allows for Buttons to not have an action.
-                    return;
-                }
+                    if (button.getConsumer() == null) { // Allows for Buttons to not have an action.
+                        return;
+                    }
 
-                button.getConsumer().accept((Player) event.getWhoClicked(), button);
+                    button.getConsumer().accept((Player) event.getWhoClicked(), button);
 
-                if (!button.isMoveable()) {
-                    event.setResult(Event.Result.DENY);
-                    event.setCancelled(true);
-                }
+                    if (!button.isMoveable()) {
+                        event.setResult(Event.Result.DENY);
+                        event.setCancelled(true);
+                    }
+                });
             }
         }
     }
