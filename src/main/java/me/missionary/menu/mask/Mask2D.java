@@ -23,6 +23,9 @@
 package me.missionary.menu.mask;
 
 
+import lombok.NonNull;
+import me.missionary.menu.Menu;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -69,6 +72,10 @@ public class Mask2D implements IMask {
      */
     public static Mask2D.Builder builder(int rows, int cols) {
         return new Builder(rows, cols);
+    }
+
+    public static Mask2D.Builder builder(@NonNull Menu menu){
+        return new Builder(menu.getSize(), 9);
     }
 
     /**

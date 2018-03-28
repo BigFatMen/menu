@@ -64,7 +64,7 @@ public class Menu {
      * @param button A not null {@link Button} which is set at the specified index.
      */
     public void setItem(int index, @NonNull Button button) {
-        checkBounds(index, "setItem(); Index is out of range!");
+        checkBounds(index);
         contents[index] = button;
     }
 
@@ -74,7 +74,7 @@ public class Menu {
      * @param button The specified {@link Button} to use in the procedure
      */
     public void fill(Button button) {
-        IntStream.range(0, size * 9).filter(value -> contents[value] == null).forEach(value -> setItem(value, button));
+        fillRange(0, size, button);
     }
 
     /**
@@ -104,8 +104,8 @@ public class Menu {
      */
     private int getFirstEmptySlot() {
         for (int i = 0; i < contents.length; i++) {
-            Button is = contents[i];
-            if (is == null || is.getStack().getIs().getType() == Material.AIR) {
+            Button button = contents[i];
+            if (button == null) {
                 return i;
             }
         }
@@ -115,12 +115,11 @@ public class Menu {
     /**
      * Helper method to see if the index is valid.
      *
-     * @param slot             the index to check
-     * @param exceptionMessage What to say if the index check fails
+     * @param slot the index to check
      */
-    private void checkBounds(int slot, String exceptionMessage) {
+    private void checkBounds(int slot) {
         if (slot < 0 || slot > (size * 9)) {
-            throw new IndexOutOfBoundsException(exceptionMessage);
+            throw new IndexOutOfBoundsException(String.format("setItem(); %s is out of bounds!", slot));
         }
     }
 
