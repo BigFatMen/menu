@@ -282,6 +282,9 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Makes the {@link #is} unbreakable
+     */
     public ItemBuilder setUnbreakable() {
         is.getItemMeta().spigot().setUnbreakable(true);
         return this;

@@ -25,7 +25,7 @@ package me.missionary.menu.mask;
 /**
  * @author SainttX (ALL CREDIT TO HIM)
  */
-public interface IMask extends Iterable<Integer> {
+public interface Mask extends Iterable<Integer> {
     /**
      * Returns whether a slot index is covered by the mask
      *
@@ -109,6 +109,6 @@ public interface IMask extends Iterable<Integer> {
          *
          * @return The instance of Mask
          */
-        IMask build();
+        Mask build();
     }
 }

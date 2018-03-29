@@ -1,8 +1,11 @@
-package me.missionary.menu;
+package me.missionary.menu.example;
 
+import me.missionary.menu.Menu;
+import me.missionary.menu.MenuListener;
 import me.missionary.menu.button.Button;
-import me.missionary.menu.mask.IMask;
+import me.missionary.menu.mask.Mask;
 import me.missionary.menu.mask.Mask2D;
+import me.missionary.menu.type.impl.ChestMenu;
 import me.missionary.menu.util.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -43,8 +46,8 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
     public class MenuImpl {
 
         public void doSomething(Player player) {
-            Menu menu = new Menu("Example Menu", 4);
-            IMask mask = new Mask2D.Builder(menu.getSize(), 9).apply("111111111") // Fills all the spaces with 1's with something which is applied later
+            Menu menu = new ChestMenu("Menu", 4);
+            Mask mask = Mask2D.builder(menu).apply("111111111")
                     .nextRow().apply("100000001")
                     .nextRow().apply("100000001")
                     .nextRow().apply("111111111").build();
@@ -55,9 +58,8 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
             menu.setItem(13, new Button(true, new ItemBuilder(Material.EMERALD).setName(ChatColor.GREEN + "Emerald"), (player1, button) -> {
                 player1.sendMessage("Wow! You have clicked the Emerald.");
             }));
-            menu.setStatic(true); // Make this menu never unregister, allows for re-use. default is false
-            menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory named " + menu1.getTitle() + " w/ a size of " + menu1.getSize()));
-            menu.show(player);
+            menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory named " + menu1 + " w/ a size of " + menu1.getMenuDimension().getSize()));
+            menu.showMenu(player);
         }
     }
 }

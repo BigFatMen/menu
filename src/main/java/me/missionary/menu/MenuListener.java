@@ -1,7 +1,7 @@
 package me.missionary.menu;
 
-import lombok.NonNull;
 import me.missionary.menu.button.Button;
+import me.missionary.menu.type.BukkitInventoryHolder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -11,10 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,9 +23,8 @@ import java.util.Optional;
 public class MenuListener implements Listener {
 
     private static MenuListener MENU_LISTENER;
-    private final List<Menu> menuListeners = new ArrayList<>();
 
-    public MenuListener() {
+    private MenuListener() {
     }
 
     public static MenuListener getInstance() { // Singleton pattern for this ensuring that there is only 1 instance.
@@ -36,53 +34,42 @@ public class MenuListener implements Listener {
         return MENU_LISTENER;
     }
 
-    void removeMenuListener(@NonNull Menu menu) {
-        menuListeners.remove(menu);
-    }
-
-    void registerMenuListener(@NonNull Menu menu) {
-        menuListeners.add(menu);
-    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     private void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
 
-        final Inventory inventory = event.getInventory();
+        final InventoryView inventoryView = event.getView();
+        final Inventory inventory = inventoryView.getTopInventory();
 
-        Menu menu = null;
-        for (Menu menuListener : menuListeners) {
-            if (menuListener.getCraftBukkitInventory().equals(inventory)) {
-                // This is our menu.
-                menu = menuListener;
-                break;
-            }
-        }
+        if (inventory.getHolder() instanceof BukkitInventoryHolder) {
+            Menu menu = ((BukkitInventoryHolder) inventory.getHolder()).getMenu();
 
-        if (menu != null) {
-            final ItemStack stack = event.getCurrentItem();
-            if ((stack == null || stack.getType() == Material.AIR)) {
-                return;
-            }
+            if (menu != null) {
+                final ItemStack stack = event.getCurrentItem();
+                if ((stack == null || stack.getType() == Material.AIR)) {
+                    return;
+                }
 
-            int slot = event.getSlot();
-            if (slot >= 0 && slot <= (menu.getSize() * 9)) {
+                int slot = event.getSlot();
+                if (slot >= 0 && slot <= menu.getMenuDimension().getSize()) {
 
-                Optional<Button> buttonOptional = menu.getButtonByIndex(slot);
+                    Optional<Button> buttonOptional = menu.getButtonByIndex(slot);
 
-                buttonOptional.ifPresent(button -> {
+                    buttonOptional.ifPresent(button -> {
 
-                    if (button.getConsumer() == null) { // Allows for Buttons to not have an action.
-                        return;
-                    }
+                        if (button.getConsumer() == null) { // Allows for Buttons to not have an action.
+                            return;
+                        }
 
-                    button.getConsumer().accept((Player) event.getWhoClicked(), button);
+                        button.getConsumer().accept((Player) event.getWhoClicked(), button);
 
-                    if (!button.isMoveable()) {
-                        event.setResult(Event.Result.DENY);
-                        event.setCancelled(true);
-                    }
-                });
+                        if (!button.isMoveable()) {
+                            event.setResult(Event.Result.DENY);
+                            event.setCancelled(true);
+                        }
+                    });
+                }
             }
         }
     }
@@ -91,18 +78,15 @@ public class MenuListener implements Listener {
     private void onInventoryClose(InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player)) return;
 
-        final Inventory inventory = event.getInventory();
-        Menu menu = null;
-        for (Menu menuListener : menuListeners) {
-            if (menuListener.getCraftBukkitInventory().equals(inventory)) {
-                // This is our menu.
-                menu = menuListener;
-                break;
-            }
-        }
+        final InventoryView inventoryView = event.getView();
+        final Inventory inventory = inventoryView.getTopInventory();
 
-        if (menu != null) {
-            menu.handleClose((Player) event.getPlayer());
+        if (inventory.getHolder() instanceof BukkitInventoryHolder) {
+            Menu menu = ((BukkitInventoryHolder) inventory.getHolder()).getMenu();
+
+            if (menu != null) {
+                menu.handleClose((Player) event.getPlayer());
+            }
         }
     }
 }

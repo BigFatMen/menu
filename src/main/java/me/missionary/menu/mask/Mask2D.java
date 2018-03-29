@@ -23,7 +23,6 @@
 package me.missionary.menu.mask;
 
 
-import lombok.NonNull;
 import me.missionary.menu.Menu;
 
 import java.util.ArrayList;
@@ -33,12 +32,33 @@ import java.util.List;
 /**
  * @author SainttX (ALL CREDIT TO HIM)
  */
-public class Mask2D implements IMask {
+public class Mask2D implements Mask {
 
     private List<Integer> mask;
 
     Mask2D(List<Integer> mask) {
         this.mask = mask;
+    }
+
+    /**
+     * Returns a new builder that matches the dimensions of a Menu
+     *
+     * @param menu The menu to build a mask for
+     * @return A mask builder conforming to the dimensions of the Menu
+     */
+    public static Builder builder(Menu menu) {
+        Menu.MenuDimension dimension = menu.getMenuDimension();
+        return new Builder(dimension.getRows(), dimension.getColumns());
+    }
+    /**
+     * Returns a new builder for specific dimensions
+     *
+     * @param rows The amount of rows to cover
+     * @param cols The amount of columns to cover
+     * @return A mask builder for the specified number of rows and columns
+     */
+    public static Builder builder(int rows, int cols) {
+        return new Builder(rows, cols);
     }
 
     @Override
@@ -64,24 +84,9 @@ public class Mask2D implements IMask {
     }
 
     /**
-     * Returns a new builder for specific dimensions
-     *
-     * @param rows The amount of rows to cover
-     * @param cols The amount of columns to cover
-     * @return A mask builder for the specified number of rows and columns
-     */
-    public static Mask2D.Builder builder(int rows, int cols) {
-        return new Builder(rows, cols);
-    }
-
-    public static Mask2D.Builder builder(@NonNull Menu menu){
-        return new Builder(menu.getSize(), 9);
-    }
-
-    /**
      * A builder to create a Mask2D
      */
-    public static class Builder implements IMask.Builder {
+    public static class Builder implements Mask.Builder {
 
         private int currentLine;
         private int rows;
@@ -120,7 +125,7 @@ public class Mask2D implements IMask {
 
         @Override
         public Builder nextRow() throws IllegalStateException {
-            if (currentLine == mask.length){
+            if (currentLine == mask.length) {
                 throw new IllegalStateException("already at end");
             }
             ++currentLine;
@@ -139,7 +144,7 @@ public class Mask2D implements IMask {
         @Override
         public Builder apply(String pattern) {
             char[] chars = pattern.toCharArray();
-            for (int i = 0 ; i < 9 && i < chars.length ; i++) {
+            for (int i = 0; i < 9 && i < chars.length; i++) {
                 String ch = String.valueOf(chars[i]);
                 int c = Integer.parseInt(ch);
                 mask[currentLine][i] = Math.min(c, 1);
@@ -150,9 +155,9 @@ public class Mask2D implements IMask {
         @Override
         public Mask2D build() {
             List<Integer> slots = new ArrayList<>();
-            for (int r = 0; r < mask.length ; r++) {
+            for (int r = 0; r < mask.length; r++) {
                 int[] col = mask[r];
-                for (int c = 0 ; c < col.length ; c++) {
+                for (int c = 0; c < col.length; c++) {
                     int state = col[c];
                     if (state == 1) {
                         slots.add(r * columns() + c);
