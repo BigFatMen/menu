@@ -24,16 +24,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>me.missionary.lavenderspigot</groupId>
-            <artifactId>LavenderSpigot</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.missionary.lavenderspigot</groupId>
-            <artifactId>LavenderSpigot-API</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
