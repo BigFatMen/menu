@@ -47,18 +47,13 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
 
         public void doSomething(Player player) {
             Menu menu = new ChestMenu("Menu", 4);
-            Mask mask = Mask2D.builder(menu).apply("111111111")
-                    .nextRow().apply("100000001")
-                    .nextRow().apply("100000001")
-                    .nextRow().apply("111111111").build();
-            mask.forEach(integer -> menu.setItem(integer, new Button(false, MASK_FILLER))); // Fills all of the 1's with the MASK_FILLER
             menu.setItem(12, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick"), (player1, button) -> {
                 player1.sendMessage("You have clicked the Stick."); // Java 8 Functional Style
             }));
             menu.setItem(13, new Button(true, new ItemBuilder(Material.EMERALD).setName(ChatColor.GREEN + "Emerald"), (player1, button) -> {
                 player1.sendMessage("Wow! You have clicked the Emerald.");
             }));
-            menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory named " + menu1 + " w/ a size of " + menu1.getMenuDimension().getSize()));
+            menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory."));
             menu.showMenu(player);
         }
     }
