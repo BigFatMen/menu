@@ -36,7 +36,7 @@ menu currently only provides support for [chest based inventories](https://githu
 
 Here is an example of how to create a menu with menu.
 ```java
-Menu menu = new ChestMenu("Ttile", 4);    
+Menu menu = new ChestMenu("Title", 4);    
 menu.setItem(12, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick"), (player1, button) -> {
     player1.sendMessage("You have clicked the Stick.");
 }));
