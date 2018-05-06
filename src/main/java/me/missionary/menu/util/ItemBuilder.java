@@ -283,14 +283,6 @@ public class ItemBuilder {
     }
 
     /**
-     * Makes the {@link #is} unbreakable
-     */
-    public ItemBuilder setUnbreakable() {
-        is.getItemMeta().spigot().setUnbreakable(true);
-        return this;
-    }
-
-    /**
      * Retrieves the itemstack from the ItemBuilder.
      *
      * @return The itemstack created/modified by the ItemBuilder instance.

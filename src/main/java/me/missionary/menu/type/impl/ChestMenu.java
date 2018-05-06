@@ -98,7 +98,7 @@ public class ChestMenu implements Menu {
         for (int i = 0; i < contents.length; i++) {
             Button button = contents[i];
             if (button != null) {
-                holder.getInventory().setItem(i, button.getStack().toItemStack());
+                holder.getInventory().setItem(i, button.getStack());
             }
         }
     }

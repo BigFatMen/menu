@@ -1,6 +1,7 @@
 package me.missionary.menu;
 
 import me.missionary.menu.button.Button;
+import me.missionary.menu.button.ClickAction;
 import me.missionary.menu.type.BukkitInventoryHolder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -62,7 +63,7 @@ public class MenuListener implements Listener {
                             return;
                         }
 
-                        button.getConsumer().accept((Player) event.getWhoClicked(), button);
+                        button.getConsumer().accept((Player) event.getWhoClicked(), new ClickAction.ButtonClickTypePair(button, event.getClick()));
 
                         if (!button.isMoveable()) {
                             event.setResult(Event.Result.DENY);

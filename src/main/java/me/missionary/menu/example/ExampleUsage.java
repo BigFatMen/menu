@@ -3,8 +3,6 @@ package me.missionary.menu.example;
 import me.missionary.menu.Menu;
 import me.missionary.menu.MenuListener;
 import me.missionary.menu.button.Button;
-import me.missionary.menu.mask.Mask;
-import me.missionary.menu.mask.Mask2D;
 import me.missionary.menu.type.impl.ChestMenu;
 import me.missionary.menu.util.ItemBuilder;
 import org.bukkit.ChatColor;
@@ -47,11 +45,13 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
 
         public void doSomething(Player player) {
             Menu menu = new ChestMenu("Menu", 4);
-            menu.setItem(12, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick"), (player1, button) -> {
+            menu.setItem(12, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick").toItemStack(), (player1, pair) -> {
                 player1.sendMessage("You have clicked the Stick."); // Java 8 Functional Style
             }));
-            menu.setItem(13, new Button(true, new ItemBuilder(Material.EMERALD).setName(ChatColor.GREEN + "Emerald"), (player1, button) -> {
-                player1.sendMessage("Wow! You have clicked the Emerald.");
+            menu.setItem(13, new Button(true, new ItemBuilder(Material.ACACIA_DOOR).setName("Door").toItemStack(), (player1, pair) -> {
+                if (pair.getClickType().isLeftClick()) {
+                    player1.sendMessage("You have clicked the " + pair.getButton().getStack().getItemMeta().getDisplayName());
+                }
             }));
             menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory."));
             menu.showMenu(player);
