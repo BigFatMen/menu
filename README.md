@@ -40,8 +40,10 @@ Menu menu = new ChestMenu("Title", 4);
 menu.setItem(12, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick"), (player1, button) -> {
     player1.sendMessage("You have clicked the Stick.");
 }));
-menu.setItem(13, new Button(true, new ItemBuilder(Material.EMERALD).setName(ChatColor.GREEN + "Emerald"), (player1, button) -> {
-    player1.sendMessage("Wow! You have clicked the Emerald.");
+menu.setItem(13, new Button(true, new ItemBuilder(Material.ACACIA_DOOR).setName("Door").toItemStack(), (player1, pair) -> {
+    if (pair.getClickType().isLeftClick()) {
+        player1.sendMessage("You have clicked the " + pair.getButton().getStack().getItemMeta().getDisplayName());
+    }
 }));
 menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory."));
 menu.showMenu(player);
