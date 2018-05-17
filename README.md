@@ -1,4 +1,4 @@
-# menu
+# menu [![](https://jitpack.io/v/missionarydev/menu.svg)](https://jitpack.io/#missionarydev/menu)
 A clean and functional inventory management api for use with Bukkit/Spigot plugins. The objective of menu is to allow for easy creation 
 of inventory systems without the hassle of the included api's in Bukkit.
 
