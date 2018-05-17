@@ -17,13 +17,6 @@ import java.util.function.BiConsumer;
 public interface Menu extends Iterable<Button> {
 
     /**
-     * Returns the {@link org.bukkit.inventory.InventoryHolder} for the Menu
-     *
-     * @return The implementation of {@link BukkitInventoryHolder}
-     */
-    BukkitInventoryHolder getInventoryHolder();
-
-    /**
      * Returns the Dimensions of the menu (R, C)
      *
      * @return The menu's row and column count
@@ -122,10 +115,6 @@ public interface Menu extends Iterable<Button> {
      * @param player The player to provide to the backing {@link BiConsumer}
      */
     void handleClose(Player player);
-
-    default boolean hasBeenConstructed() {
-        return getInventoryHolder().getInventory() != null;
-    }
 
     /**
      * A blank interface that extends {@link BiConsumer} for our usage.

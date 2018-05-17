@@ -36,11 +36,6 @@ public class ChestMenu implements Menu {
     }
 
     @Override
-    public BukkitInventoryHolder getInventoryHolder() {
-        return holder;
-    }
-
-    @Override
     public MenuDimension getMenuDimension() {
         return dimension;
     }
@@ -105,7 +100,7 @@ public class ChestMenu implements Menu {
 
     @Override
     public void showMenu(Player player) {
-        if (!hasBeenConstructed()) {
+        if (holder == null) {
             buildInventory(true);
         } else {
             buildInventory(false);
