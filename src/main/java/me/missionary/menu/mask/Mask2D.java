@@ -24,147 +24,67 @@ package me.missionary.menu.mask;
 
 
 import me.missionary.menu.Menu;
+import me.missionary.menu.button.Button;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
- * @author SainttX (ALL CREDIT TO HIM)
+ * @author Missionary (missionarymc@gmail.com)
+ * @since 5/17/2018
  */
 public class Mask2D implements Mask {
 
-    private List<Integer> mask;
+    private final Map<Character, Button> maskButtonKey;
+    private String maskPattern;
 
-    Mask2D(List<Integer> mask) {
-        this.mask = mask;
-    }
-
-    /**
-     * Returns a new builder that matches the dimensions of a Menu
-     *
-     * @param menu The menu to build a mask for
-     * @return A mask builder conforming to the dimensions of the Menu
-     */
-    public static Builder builder(Menu menu) {
-        Menu.MenuDimension dimension = menu.getMenuDimension();
-        return new Builder(dimension.getRows(), dimension.getColumns());
-    }
-    /**
-     * Returns a new builder for specific dimensions
-     *
-     * @param rows The amount of rows to cover
-     * @param cols The amount of columns to cover
-     * @return A mask builder for the specified number of rows and columns
-     */
-    public static Builder builder(int rows, int cols) {
-        return new Builder(rows, cols);
+    public Mask2D() {
+        this.maskButtonKey = new HashMap<>();
     }
 
     @Override
-    public boolean test(int index) {
-        return mask.contains(index);
+    public Mask setButton(char key, Button button) {
+        maskButtonKey.put(key, button);
+        return this;
     }
 
     @Override
-    public boolean test(int row, int col) {
-        return test(row * 9 + col);
-    }
-
-    /**
-     * @return All indices affected by this mask
-     */
-    public List<Integer> getMask() {
-        return mask;
+    public Mask setMaskPattern(String... maskPattern) {
+        String concatPattern = Arrays.stream(maskPattern).collect(Collectors.joining());
+        for (char c : concatPattern.toCharArray()) {
+            if (Character.isWhitespace(c)) {
+                continue;
+            }
+            if (!maskButtonKey.containsKey(c)) {
+                throw new IllegalArgumentException(String.format("%s is a unrecognized mapping for the Mask.", c));
+            }
+        }
+        this.maskPattern = concatPattern.replace("\n", "");
+        return this;
     }
 
     @Override
-    public Iterator<Integer> iterator() {
-        return mask.iterator();
-    }
-
-    /**
-     * A builder to create a Mask2D
-     */
-    public static class Builder implements Mask.Builder {
-
-        private int currentLine;
-        private int rows;
-        private int cols;
-        private int[][] mask;
-
-        public Builder(int rows, int cols) {
-            this.rows = rows;
-            this.cols = cols;
-            this.mask = new int[rows][cols];
+    public void applyTo(Menu menu) {
+        if (maskButtonKey.isEmpty()) {
+            throw new IllegalArgumentException("The maskButtonKey map is empty!");
+        }
+        if (maskPattern == null) {
+            throw new IllegalArgumentException("The maskPattern is null!");
+        }
+        if (maskPattern.length() > menu.getMenuDimension().getSize()) {
+            throw new IllegalArgumentException(String.format("The maskPattern length: %d is longer than the menu dimension: %d", maskPattern.length(), menu.getMenuDimension().getSize()));
         }
 
-        @Override
-        public int currentLine() {
-            return currentLine;
-        }
-
-        @Override
-        public int rows() {
-            return rows;
-        }
-
-        @Override
-        public int columns() {
-            return cols;
-        }
-
-        @Override
-        public Builder row(int row) throws IllegalStateException {
-            if (row < 0 || row >= rows) {
-                throw new IllegalStateException("row not between 0 and " + rows());
+        IntStream.range(0, maskPattern.length()).forEach(i -> {
+            char ch = maskPattern.charAt(i);
+            if (ch == ' ' || ch == '_') {
+                menu.setItem(i, null);
+            } else {
+                menu.setItem(i, maskButtonKey.get(ch));
             }
-            currentLine = row;
-            return this;
-        }
-
-        @Override
-        public Builder nextRow() throws IllegalStateException {
-            if (currentLine == mask.length) {
-                throw new IllegalStateException("already at end");
-            }
-            ++currentLine;
-            return this;
-        }
-
-        @Override
-        public Builder previousRow() throws IllegalStateException {
-            if (currentLine == 0) {
-                throw new IllegalStateException("already at start");
-            }
-            --currentLine;
-            return this;
-        }
-
-        @Override
-        public Builder apply(String pattern) {
-            char[] chars = pattern.toCharArray();
-            for (int i = 0; i < 9 && i < chars.length; i++) {
-                String ch = String.valueOf(chars[i]);
-                int c = Integer.parseInt(ch);
-                mask[currentLine][i] = Math.min(c, 1);
-            }
-            return this;
-        }
-
-        @Override
-        public Mask2D build() {
-            List<Integer> slots = new ArrayList<>();
-            for (int r = 0; r < mask.length; r++) {
-                int[] col = mask[r];
-                for (int c = 0; c < col.length; c++) {
-                    int state = col[c];
-                    if (state == 1) {
-                        slots.add(r * columns() + c);
-                    }
-                }
-            }
-            return new Mask2D(slots);
-        }
+        });
     }
 }
