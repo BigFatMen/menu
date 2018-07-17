@@ -35,6 +35,8 @@ import java.util.stream.IntStream;
 /**
  * @author Missionary (missionarymc@gmail.com)
  * @since 5/17/2018
+ *
+ * Note: The use of a blank space ( ) or underscore (_) will remove the item.
  */
 public class Mask2D implements Mask {
 

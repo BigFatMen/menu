@@ -34,17 +34,37 @@ Bukkit.getServer().getPluginManager().registerEvents(MenuListener.getInstance(),
 ## Functionality
 menu currently only provides support for [chest based inventories](https://github.com/missionarydev/menu/blob/master/src/main/java/me/missionary/menu/type/impl/ChestMenu.java) with more inventory types coming Soon™.
 
-Here is an example of how to create a menu with menu.
+Here is an [example](https://github.com/missionarydev/menu/blob/master/src/main/java/me/missionary/menu/example/ExampleUsage.java) of how to create a menu with menu.
 ```java
-Menu menu = new ChestMenu("Title", 4);    
-menu.setItem(12, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick"), (player1, button) -> {
-    player1.sendMessage("You have clicked the Stick.");
-}));
-menu.setItem(13, new Button(true, new ItemBuilder(Material.ACACIA_DOOR).setName("Door").toItemStack(), (player1, pair) -> {
-    if (pair.getClickType().isLeftClick()) {
-        player1.sendMessage("You have clicked the " + pair.getButton().getStack().getItemMeta().getDisplayName());
+public class MenuImpl {
+
+        public void createMenu(Player player) {
+            Menu menu = new ChestMenu("Menu", 4);
+            menu.setItem(12, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick").toItemStack(), (player1, pair) -> {
+                player1.sendMessage("You have clicked the Stick."); // Java 8 Functional Style
+            }));
+            menu.setItem(13, new Button(true, new ItemBuilder(Material.ACACIA_DOOR).setName("Door").toItemStack(), (player1, pair) -> {
+                if (pair.getClickType().isLeftClick()) {
+                    player1.sendMessage("You have clicked the " + pair.getButton().getStack().getItemMeta().getDisplayName());
+                }
+            }));
+            menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory."));
+            menu.showMenu(player);
+        }
+
+        public void createMaskedMenu(Player player) {
+            Menu menu = new ChestMenu("Masked Menu", 3);
+            new Mask2D()
+                    .setButton('0', new Button(false, MASK_FILLER))
+                    .setButton('1', new Button(false, new ItemBuilder(Material.IRON_DOOR).toItemStack(), (player1, buttonClickTypeButtonClickTypePair) -> {
+                        player1.sendMessage("WOW! You have clicked an Iron Door!!");
+                    }))
+                    .setMaskPattern(
+                            "000000000",
+                            "000010000",
+                            "000000000")
+                    .applyTo(menu);
+            menu.showMenu(player);
+        }
     }
-}));
-menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory."));
-menu.showMenu(player);
 ```
