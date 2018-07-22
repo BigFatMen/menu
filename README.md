@@ -56,7 +56,7 @@ public class MenuImpl {
             Menu menu = new ChestMenu("Masked Menu", 3);
             new Mask2D()
                     .setButton('0', new Button(false, MASK_FILLER))
-                    .setButton('1', new Button(false, new ItemBuilder(Material.IRON_DOOR).toItemStack(), (player1, buttonClickTypeButtonClickTypePair) -> {
+                    .setButton('1', new Button(false, new ItemBuilder(Material.IRON_DOOR).toItemStack(), (player1, buttonClickTypeInformationPair) -> {
                         player1.sendMessage("WOW! You have clicked an Iron Door!!");
                     }))
                     .setMaskPattern(

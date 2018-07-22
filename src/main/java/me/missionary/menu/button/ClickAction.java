@@ -3,6 +3,7 @@ package me.missionary.menu.button;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import me.missionary.menu.Menu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
@@ -17,16 +18,17 @@ public interface ClickAction {
      * Preforms an operation on the given argument(s)
      *
      * @param player                             The {@link Player} that has acted
-     * @param buttonClickTypeButtonClickTypePair The {@link ButtonClickTypePair} that contains the {@link Button} clicked and the {@link ClickType}
+     * @param buttonClickTypeInformationPair The {@link InformationPair} that contains the {@link Button} clicked, the {@link Menu}, and the {@link ClickType}
      */
-    void accept(Player player, ButtonClickTypePair buttonClickTypeButtonClickTypePair);
+    void accept(Player player, InformationPair buttonClickTypeInformationPair);
 
     @Getter
     @Setter
     @AllArgsConstructor
-    class ButtonClickTypePair {
+    class InformationPair {
         private Button button;
         private ClickType clickType;
+        private Menu menu;
     }
 
 }
