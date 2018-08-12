@@ -24,6 +24,17 @@ public interface Menu extends Iterable<Button> {
     MenuDimension getMenuDimension();
 
     /**
+     * Allows for a 'parent' menu
+     * (e.g. You have a GUI based punishment history system
+     * and the main menu shows: Bans, Mutes, and Warnings.
+     * When you choose the option you open a new GUI that lists the information,
+     * then on close it re-opens the list menu)
+     *
+     * @return the {@link Optional<Menu>}
+     */
+    Optional<Menu> getParent();
+
+    /**
      * Add a {@link Button} to the menu with no specified index
      *
      * @param button The button to be added

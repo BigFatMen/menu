@@ -79,5 +79,13 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
                     .applyTo(menu);
             menu.showMenu(player);
         }
+
+        public void createRelationshipMenu(Player player) {
+            Menu parent = new ChestMenu("Parent Menu", 2);
+            parent.setItem(3, new Button(false, new ItemBuilder(Material.GLASS).toItemStack()));
+            Menu child = new ChestMenu("Child", 1);
+            child.setItem(3, new Button(false, new ItemBuilder(Material.GLASS_BOTTLE).toItemStack()));
+            ((ChestMenu) child).setParent(parent);
+        }
     }
 }

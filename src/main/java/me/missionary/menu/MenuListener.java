@@ -87,6 +87,7 @@ public class MenuListener implements Listener {
 
             if (menu != null) {
                 menu.handleClose((Player) event.getPlayer());
+                menu.getParent().ifPresent(parent -> parent.showMenu((Player) event.getPlayer()));
             }
         }
     }

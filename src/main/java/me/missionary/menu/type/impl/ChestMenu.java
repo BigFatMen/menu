@@ -2,8 +2,8 @@ package me.missionary.menu.type.impl;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import me.missionary.menu.Menu;
-import me.missionary.menu.MenuListener;
 import me.missionary.menu.button.Button;
 import me.missionary.menu.type.BukkitInventoryHolder;
 import me.missionary.menu.util.ArrayIterator;
@@ -20,8 +20,11 @@ import java.util.stream.IntStream;
  */
 public class ChestMenu implements Menu {
 
-    @Getter private final String title;
+    @Getter
+    private final String title;
     private final MenuDimension dimension;
+    @Setter
+    private Menu parent;
     private BukkitInventoryHolder holder;
     private Button[] contents;
     private CloseHandler closeHandler;
@@ -124,6 +127,11 @@ public class ChestMenu implements Menu {
         if (closeHandler != null) {
             closeHandler.accept(player, this);
         }
+    }
+
+    @Override
+    public Optional<Menu> getParent() {
+        return Optional.ofNullable(parent);
     }
 
     @Override
