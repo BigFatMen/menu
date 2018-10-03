@@ -22,13 +22,13 @@ menu will now have been added to your local maven repo (.m2) and you can begin u
 <dependency>
     <groupId>me.missionary</groupId>
     <artifactId>menu</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
     <scope>compile</scope>
 </dependency>
 ```
-After you have added the dependency to your Maven pom.xml the last thing you need to do is register the MenuListener with your plugin!
+After you have added the dependency to your Maven pom.xml the last thing you need to do is register the MenuHandler with your plugin!
 ```java
-Bukkit.getServer().getPluginManager().registerEvents(MenuListener.getInstance(), instance of your plugin);
+new MenuHandler(this);
 ```
 
 ## Functionality
@@ -36,35 +36,76 @@ menu currently only provides support for [chest based inventories](https://githu
 
 Here is an [example](https://github.com/missionarydev/menu/blob/master/src/main/java/me/missionary/menu/example/ExampleUsage.java) of how to create a menu with menu.
 ```java
-public class MenuImpl {
+public class ExampleUsage extends JavaPlugin implements CommandExecutor {
 
-        public void createMenu(Player player) {
-            Menu menu = new ChestMenu("Menu", 4);
-            menu.setItem(12, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick").toItemStack(), (player1, pair) -> {
-                player1.sendMessage("You have clicked the Stick."); // Java 8 Functional Style
-            }));
-            menu.setItem(13, new Button(true, new ItemBuilder(Material.ACACIA_DOOR).setName("Door").toItemStack(), (player1, pair) -> {
-                if (pair.getClickType().isLeftClick()) {
-                    player1.sendMessage("You have clicked the " + pair.getButton().getStack().getItemMeta().getDisplayName());
-                }
-            }));
-            menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory."));
-            menu.showMenu(player);
+    private static final Button MASK_FILLER = Button.placeholder(new ItemBuilder(Material.STAINED_GLASS_PANE).setDurability((short) 8).setName(ChatColor.WHITE + "").toItemStack());
+
+    @Override
+    public void onEnable() {
+        new MenuHandler(this);
+        getServer().getPluginCommand("test").setExecutor(this);
+    }
+
+    @Override
+    public void onDisable() {
+        // Nothing to handle here.
+    }
+
+    @Override
+    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+        if (commandSender instanceof Player) {
+            Player player = (Player) commandSender;
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                Menu menu = new ChestMenu(player, ChatColor.YELLOW + "Example Menu", 1);
+                menu.setItem(4, new ButtonImpl());
+                menu.showMenu((Player) commandSender);
+            } else {
+                Menu maskedMenu = new ChestMenu(player, ChatColor.YELLOW + "Masked Menu Example", 3);
+                new Mask2D()
+                        .setButton('0', MASK_FILLER)
+                        .setButton('1', new Button() {
+                            @Override
+                            public ItemStack getButton(Player player) {
+                                return new ItemBuilder(Material.WOOL).setName("Mask Example").setDyeColor(DyeColor.RED).toItemStack();
+                            }
+
+                            @Override
+                            public void onClick(Player player, ClickAction.InformationPair clickAction) {
+                                if (clickAction.getClickType() == ClickType.LEFT) {
+                                    player.sendMessage(ChatColor.GREEN + "You clicked the button!");
+                                }
+                            }
+                        })
+                        .setMaskPattern(
+                                "000000000",
+                                "000010000",
+                                "000000000")
+                        .applyTo(maskedMenu);
+            }
+        }
+        return true;
+    }
+
+    public class ButtonImpl extends Button {
+
+        @Override
+        public ItemStack getButton(Player player) {
+            ItemBuilder itemBuilder = new ItemBuilder(Material.WOOL);
+            itemBuilder.setName(ChatColor.LIGHT_PURPLE + "Woah! Fancy " + ChatColor.YELLOW + System.currentTimeMillis());
+            itemBuilder.setLore(Arrays.asList(ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "------------------------",
+                    ChatColor.YELLOW + "Test: " + ChatColor.GREEN + "Success!",
+                    ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "------------------------"
+            ));
+            itemBuilder.setDyeColor(DyeColor.PINK);
+            return itemBuilder.toItemStack();
         }
 
-        public void createMaskedMenu(Player player) {
-            Menu menu = new ChestMenu("Masked Menu", 3);
-            new Mask2D()
-                    .setButton('0', new Button(false, MASK_FILLER))
-                    .setButton('1', new Button(false, new ItemBuilder(Material.IRON_DOOR).toItemStack(), (player1, buttonClickTypeInformationPair) -> {
-                        player1.sendMessage("WOW! You have clicked an Iron Door!!");
-                    }))
-                    .setMaskPattern(
-                            "000000000",
-                            "000010000",
-                            "000000000")
-                    .applyTo(menu);
-            menu.showMenu(player);
+        @Override
+        public void onClick(Player player, ClickAction.InformationPair informationPair) {
+            player.sendMessage(ChatColor.LIGHT_PURPLE + "Worked!");
         }
     }
+
+}
+
 ```

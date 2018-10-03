@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import me.missionary.menu.Menu;
+import me.missionary.menu.MenuHandler;
 import me.missionary.menu.button.Button;
 import me.missionary.menu.type.BukkitInventoryHolder;
 import me.missionary.menu.util.ArrayIterator;
@@ -23,19 +24,28 @@ public class ChestMenu implements Menu {
     @Getter
     private final String title;
     private final MenuDimension dimension;
+    private final Player player;
     @Setter
     private Menu parent;
     private BukkitInventoryHolder holder;
     private Button[] contents;
     private CloseHandler closeHandler;
+    private boolean autoUpdate;
 
-    public ChestMenu(@NonNull String title, int size) {
+    public ChestMenu(Player player, @NonNull String title, int size) {
+        this.player = player;
         this.title = title.length() > 32 ? title.substring(0, 32) : title;
         if (size <= 0 || size > 6) {
             throw new IndexOutOfBoundsException("A menu can only have between 1 & 6 for a size");
         }
         this.dimension = new MenuDimension(size, 9);
         this.contents = new Button[size * 9];
+        this.autoUpdate = true;
+    }
+
+    public ChestMenu(Player player, @NonNull String title, int size, boolean autoUpdate) {
+        this(player, title, size);
+        this.autoUpdate = autoUpdate;
     }
 
     @Override
@@ -92,23 +102,32 @@ public class ChestMenu implements Menu {
         if (initial) {
             this.holder = new BukkitInventoryHolder(this);
             holder.setInventory(Bukkit.createInventory(holder, dimension.getSize(), title));
+        } else {
+            holder.getInventory().clear();
         }
         for (int i = 0; i < contents.length; i++) {
             Button button = contents[i];
             if (button != null) {
-                holder.getInventory().setItem(i, button.getStack());
+                holder.getInventory().setItem(i, button.getButton(player));
             }
         }
     }
 
     @Override
-    public void showMenu(Player player) {
+    public void showMenu(Player player, boolean update) {
         if (holder == null) {
             buildInventory(true);
         } else {
             buildInventory(false);
         }
-        player.openInventory(holder.getInventory());
+        if (!MenuHandler.OPEN_MENUS.containsKey(player.getUniqueId())) {
+            MenuHandler.OPEN_MENUS.put(player.getUniqueId(), this);
+        }
+        if (update) {
+            player.updateInventory();
+        } else {
+            player.openInventory(holder.getInventory());
+        }
     }
 
     @Override
@@ -127,6 +146,12 @@ public class ChestMenu implements Menu {
         if (closeHandler != null) {
             closeHandler.accept(player, this);
         }
+        MenuHandler.OPEN_MENUS.remove(player.getUniqueId());
+    }
+
+    @Override
+    public boolean isAutoUpdate() {
+        return true;
     }
 
     @Override
