@@ -1,27 +1,35 @@
 package me.missionary.menu.button;
 
-import lombok.Getter;
-import lombok.NonNull;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
  * @author Missionary (missionarymc@gmail.com)
- * @since 2/21/2018
+ * @since 10/3/2018
  */
-@Getter
-public class Button {
+public abstract class Button {
 
-    private boolean moveable;
-    private ItemStack stack;
-    private ClickAction consumer;
-
-    public Button(boolean moveable, @NonNull ItemStack stack, ClickAction consumer) {
-        this.moveable = moveable;
-        this.stack = stack;
-        this.consumer = consumer;
+    /**
+     * This will make the item a 'placeholder' item with no mobility or click action.
+     *
+     * @param stack The {@link ItemStack} to be used
+     * @return The 'placeholder' {@link Button}
+     */
+    public static Button placeholder(ItemStack stack) {
+        return new Button() {
+            @Override
+            public ItemStack getButton(Player player) {
+                return stack;
+            }
+        };
     }
 
-    public Button(boolean moveable, ItemStack stack) {
-        this(moveable, stack, null);
+    public abstract ItemStack getButton(Player player);
+
+    public void onClick(Player player, ClickAction.InformationPair clickAction) {
+    }
+
+    public boolean isMovable() {
+        return false;
     }
 }

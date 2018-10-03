@@ -102,7 +102,17 @@ public interface Menu extends Iterable<Button> {
      *
      * @param player The player to open the menu for
      */
-    void showMenu(Player player);
+    default void showMenu(Player player) {
+        showMenu(player, false);
+    }
+
+    /**
+     * Open's the menu for the specified {@link Player}
+     *
+     * @param player The player to open the menu for
+     * @param update Shall this menu update?
+     */
+    void showMenu(Player player, boolean update);
 
     /**
      * Closes the menu for the specified {@link Player}
@@ -126,6 +136,13 @@ public interface Menu extends Iterable<Button> {
      * @param player The player to provide to the backing {@link BiConsumer}
      */
     void handleClose(Player player);
+
+    /**
+     * Will this {@link Menu} auto-update every 20 ticks?
+     *
+     * @return true if the {@link Menu shall update}, false if it shall not.
+     */
+    boolean isAutoUpdate();
 
     /**
      * A blank interface that extends {@link BiConsumer} for our usage.

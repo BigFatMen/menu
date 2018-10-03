@@ -1,20 +1,24 @@
 package me.missionary.menu.example;
 
 import me.missionary.menu.Menu;
-import me.missionary.menu.MenuListener;
+import me.missionary.menu.MenuHandler;
 import me.missionary.menu.button.Button;
+import me.missionary.menu.button.ClickAction;
 import me.missionary.menu.mask.Mask2D;
 import me.missionary.menu.type.impl.ChestMenu;
 import me.missionary.menu.util.ItemBuilder;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -23,11 +27,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class ExampleUsage extends JavaPlugin implements CommandExecutor {
 
-    private static final ItemStack MASK_FILLER = new ItemBuilder(Material.STAINED_GLASS_PANE).setDurability((short) 8).setName(ChatColor.WHITE + "").toItemStack();
+    private static final Button MASK_FILLER = Button.placeholder(new ItemBuilder(Material.STAINED_GLASS_PANE).setDurability((short) 8).setName(ChatColor.WHITE + "").toItemStack());
 
     @Override
     public void onEnable() {
-        getServer().getPluginManager().registerEvents(MenuListener.getInstance(), this); // No need for 'new' keyword because MenuListener follows Singleton
+        new MenuHandler(this);
         getServer().getPluginCommand("test").setExecutor(this);
     }
 
@@ -39,53 +43,56 @@ public class ExampleUsage extends JavaPlugin implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
         if (commandSender instanceof Player) {
+            Player player = (Player) commandSender;
             if (ThreadLocalRandom.current().nextBoolean()) {
-                new MenuImpl().createMenu((Player) commandSender);
+                Menu menu = new ChestMenu(player, ChatColor.YELLOW + "Example Menu", 1);
+                menu.setItem(4, new ButtonImpl());
+                menu.showMenu((Player) commandSender);
             } else {
-                new MenuImpl().createMaskedMenu((Player) commandSender);
+                Menu maskedMenu = new ChestMenu(player, ChatColor.YELLOW + "Masked Menu Example", 3);
+                new Mask2D()
+                        .setButton('0', MASK_FILLER)
+                        .setButton('1', new Button() {
+                            @Override
+                            public ItemStack getButton(Player player) {
+                                return new ItemBuilder(Material.WOOL).setName("Mask Example").setDyeColor(DyeColor.RED).toItemStack();
+                            }
+
+                            @Override
+                            public void onClick(Player player, ClickAction.InformationPair clickAction) {
+                                if (clickAction.getClickType() == ClickType.LEFT) {
+                                    player.sendMessage(ChatColor.GREEN + "You clicked the button!");
+                                }
+                            }
+                        })
+                        .setMaskPattern(
+                                "000000000",
+                                "000010000",
+                                "000000000")
+                        .applyTo(maskedMenu);
             }
         }
         return true;
     }
 
+    public class ButtonImpl extends Button {
 
-    public class MenuImpl {
-
-        public void createMenu(Player player) {
-            Menu menu = new ChestMenu("Menu", 4);
-            menu.setItem(12, new Button(true, new ItemBuilder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Stick").toItemStack(), (player1, pair) -> {
-                player1.sendMessage("You have clicked the Stick."); // Java 8 Functional Style
-            }));
-            menu.setItem(13, new Button(true, new ItemBuilder(Material.ACACIA_DOOR).setName("Door").toItemStack(), (player1, pair) -> {
-                if (pair.getClickType().isLeftClick()) {
-                    player1.sendMessage("You have clicked the " + pair.getButton().getStack().getItemMeta().getDisplayName());
-                }
-            }));
-            menu.setCloseHandler((player1, menu1) -> player1.sendMessage("Wow! You closed the inventory."));
-            menu.showMenu(player);
+        @Override
+        public ItemStack getButton(Player player) {
+            ItemBuilder itemBuilder = new ItemBuilder(Material.WOOL);
+            itemBuilder.setName(ChatColor.LIGHT_PURPLE + "Woah! Fancy " + ChatColor.YELLOW + System.currentTimeMillis());
+            itemBuilder.setLore(Arrays.asList(ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "------------------------",
+                    ChatColor.YELLOW + "Test: " + ChatColor.GREEN + "Success!",
+                    ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "------------------------"
+            ));
+            itemBuilder.setDyeColor(DyeColor.PINK);
+            return itemBuilder.toItemStack();
         }
 
-        public void createMaskedMenu(Player player) {
-            Menu menu = new ChestMenu("Masked Menu", 3);
-            new Mask2D()
-                    .setButton('0', new Button(false, MASK_FILLER))
-                    .setButton('1', new Button(false, new ItemBuilder(Material.IRON_DOOR).toItemStack(), (player1, buttonClickTypeButtonClickTypePair) -> {
-                        player1.sendMessage("WOW! You have clicked an Iron Door!!");
-                    }))
-                    .setMaskPattern(
-                            "000000000",
-                            "000010000",
-                            "000000000")
-                    .applyTo(menu);
-            menu.showMenu(player);
-        }
-
-        public void createRelationshipMenu(Player player) {
-            Menu parent = new ChestMenu("Parent Menu", 2);
-            parent.setItem(3, new Button(false, new ItemBuilder(Material.GLASS).toItemStack()));
-            Menu child = new ChestMenu("Child", 1);
-            child.setItem(3, new Button(false, new ItemBuilder(Material.GLASS_BOTTLE).toItemStack()));
-            ((ChestMenu) child).setParent(parent);
+        @Override
+        public void onClick(Player player, ClickAction.InformationPair informationPair) {
+            player.sendMessage(ChatColor.LIGHT_PURPLE + "Worked!");
         }
     }
+
 }
