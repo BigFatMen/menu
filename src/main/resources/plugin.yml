@@ -1,7 +1,0 @@
-name: mMenuTest
-main: me.missionary.menu.example.ExampleUsage
-author: Missionary
-version: 1.2-SNAPSHOT-br-newbuttons
-description: Plugin used to test the menu API.
-commands:
-  test:
